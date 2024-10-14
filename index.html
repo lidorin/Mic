@@ -5,6 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>אפליקציית מיקרופון לכנסים</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* סגנון בסיסי */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .bar {
+            width: 10px;
+            height: 50px;
+            background-color: green;
+            margin: 0 2px;
+            display: inline-block;
+            transition: height 0.1s, background-color 0.1s;
+        }
+    </style>
 </head>
 <body>
     <h1>אפליקציית מיקרופון לכנסים</h1>
@@ -22,8 +49,14 @@
     <div id="status-msg" class="status">אין רמקול מחובר</div>
     <button id="microphone-btn" disabled>הפעל מיקרופון</button>
 
-    <!-- מחוון שמע -->
-    <div id="audio-level-indicator" style="width: 0; height: 10px; background-color: green; margin-top: 20px;"></div>
+    <!-- מחוון שמע מבוסס עמודות -->
+    <div class="container">
+        <div class="bar" id="bar1"></div>
+        <div class="bar" id="bar2"></div>
+        <div class="bar" id="bar3"></div>
+        <div class="bar" id="bar4"></div>
+        <div class="bar" id="bar5"></div>
+    </div>
 
     <script src="app.js"></script>
 </body>
