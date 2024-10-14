@@ -5,7 +5,7 @@ const connectBtn = document.getElementById('connect-btn');
 const microphoneBtn = document.getElementById('microphone-btn');
 const statusMsg = document.getElementById('status-msg');
 const modeSelector = document.getElementById('mode-selector');
-const audioLevelIndicator = document.getElementById('audio-level-indicator');
+const bars = Array.from(document.getElementsByClassName('bar'));
 
 let audioStream = null;
 let analyser;
@@ -64,8 +64,7 @@ async function enableMicrophone() {
         source.connect(analyser);
         analyser.connect(audioContext.destination);
 
-        // התחלת אנימציה למדידת עוצמת קול
-        visualizeAudio();
+        visualizeAudioBars();
     } catch (error) {
         console.error('שגיאה בגישה למיקרופון:', error);
         statusMsg.textContent = "שגיאה בגישה למיקרופון";
@@ -73,13 +72,25 @@ async function enableMicrophone() {
     }
 }
 
-// פונקציה להצגת מחוון שמע
-function visualizeAudio() {
-    requestAnimationFrame(visualizeAudio);
+// פונקציה להצגת מחוון שמע מבוסס עמודות
+function visualizeAudioBars() {
+    requestAnimationFrame(visualizeAudioBars);
     analyser.getByteFrequencyData(dataArray);
-    
-    const level = Math.max(...dataArray); // עוצמת הקול הנוכחית
-    audioLevelIndicator.style.width = `${level}px`;
+
+    const step = Math.round(dataArray.length / bars.length);
+    bars.forEach((bar, index) => {
+        const value = dataArray[index * step];
+        const barHeight = (value / 255) * 100;
+        bar.style.height = `${barHeight}px`;
+
+        if (value < 85) {
+            bar.style.backgroundColor = 'green';
+        } else if (value < 170) {
+            bar.style.backgroundColor = 'yellow';
+        } else {
+            bar.style.backgroundColor = 'red';
+        }
+    });
 }
 
 // פונקציה לעצירת המיקרופון
@@ -89,7 +100,7 @@ function stopMicrophone() {
         audioStream = null;
         statusMsg.textContent = "מיקרופון הופסק";
         statusMsg.style.color = "gray";
-        audioLevelIndicator.style.width = '0';
+        bars.forEach(bar => bar.style.height = '10px');
     }
 }
 
