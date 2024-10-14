@@ -3,14 +3,10 @@
 // אלמנטים בממשק
 const microphoneBtn = document.getElementById('microphone-btn');
 const statusMsg = document.getElementById('status-msg');
-const bars = Array.from(document.getElementsByClassName('bar'));
 
 let audioStream = null;
-let analyser;
-let dataArray;
-let visualizationInterval;
 
-// פונקציה להפעלת המיקרופון והפעלת מחוון שמע בסיסי
+// פונקציה להפעלת המיקרופון ושידור לרמקול פנימי
 async function enableMicrophone() {
     if (audioStream) {
         stopMicrophone();
@@ -25,15 +21,8 @@ async function enableMicrophone() {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const source = audioContext.createMediaStreamSource(audioStream);
 
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        const bufferLength = analyser.frequencyBinCount;
-        dataArray = new Uint8Array(bufferLength);
-
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
-
-        visualizeAudioBars();
+        // שידור האודיו ישירות לרמקול הפנימי
+        source.connect(audioContext.destination);
     } catch (error) {
         console.error('שגיאה בגישה למיקרופון:', error);
         statusMsg.textContent = "שגיאה בגישה למיקרופון";
@@ -41,30 +30,14 @@ async function enableMicrophone() {
     }
 }
 
-// הפעלת מחוון שמע בסיסי עם `setInterval` כדי להפחית עומס
-function visualizeAudioBars() {
-    visualizationInterval = setInterval(() => {
-        analyser.getByteFrequencyData(dataArray);
-
-        const step = Math.round(dataArray.length / bars.length);
-        bars.forEach((bar, index) => {
-            const value = dataArray[index * step];
-            const barHeight = (value / 255) * 100;
-            bar.style.height = `${barHeight}px`;
-        });
-    }, 100); // עדכון כל 100 מילישניות
-}
-
-// פונקציה לעצירת המיקרופון והפסקת המחוון
+// פונקציה לעצירת המיקרופון
 function stopMicrophone() {
     if (audioStream) {
         audioStream.getTracks().forEach(track => track.stop());
         audioStream = null;
-        clearInterval(visualizationInterval); // עצירת העדכונים
         statusMsg.textContent = "מיקרופון כבוי";
         statusMsg.style.color = "red";
         microphoneBtn.textContent = "הפעל מיקרופון";
-        bars.forEach(bar => bar.style.height = '10px');
     }
 }
 
