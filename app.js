@@ -5,8 +5,11 @@ const connectBtn = document.getElementById('connect-btn');
 const microphoneBtn = document.getElementById('microphone-btn');
 const statusMsg = document.getElementById('status-msg');
 const modeSelector = document.getElementById('mode-selector');
+const audioLevelIndicator = document.getElementById('audio-level-indicator');
 
 let audioStream = null;
+let analyser;
+let dataArray;
 
 // שינוי מצב על בסיס בורר המצבים
 modeSelector.addEventListener('change', (event) => {
@@ -39,7 +42,7 @@ async function connectToBluetooth() {
     }
 }
 
-// פונקציה להפעלת המיקרופון
+// פונקציה להפעלת המיקרופון והוספת מחוון שמע
 async function enableMicrophone() {
     if (audioStream) {
         stopMicrophone();
@@ -49,15 +52,34 @@ async function enableMicrophone() {
         audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         statusMsg.textContent = "מיקרופון פועל";
         statusMsg.style.color = "blue";
-        // כאן יתווסף השמע ל-rankol הפנימי אם לא מחובר Bluetooth
+
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const source = audioContext.createMediaStreamSource(audioStream);
-        source.connect(audioContext.destination);
+
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+
+        // התחלת אנימציה למדידת עוצמת קול
+        visualizeAudio();
     } catch (error) {
         console.error('שגיאה בגישה למיקרופון:', error);
         statusMsg.textContent = "שגיאה בגישה למיקרופון";
         statusMsg.style.color = "red";
     }
+}
+
+// פונקציה להצגת מחוון שמע
+function visualizeAudio() {
+    requestAnimationFrame(visualizeAudio);
+    analyser.getByteFrequencyData(dataArray);
+    
+    const level = Math.max(...dataArray); // עוצמת הקול הנוכחית
+    audioLevelIndicator.style.width = `${level}px`;
 }
 
 // פונקציה לעצירת המיקרופון
@@ -67,6 +89,7 @@ function stopMicrophone() {
         audioStream = null;
         statusMsg.textContent = "מיקרופון הופסק";
         statusMsg.style.color = "gray";
+        audioLevelIndicator.style.width = '0';
     }
 }
 
