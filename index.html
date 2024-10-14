@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="he">
 <head>
@@ -8,14 +7,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>אפליקציית מיקרופון לכנסים</h1>
-    </header>
-    <main>
-        <button id="connect-btn" class="btn">חיבור לרמקול Bluetooth</button>
-        <div id="status-msg" class="status">אין רמקול מחובר</div>
-        <button id="microphone-btn" class="btn" disabled>הפעל מיקרופון</button>
-    </main>
+    <h1>אפליקציית מיקרופון לכנסים</h1>
+    
+    <!-- כפתורי בחירת מצב -->
+    <div>
+        <label for="mode-selector">בחר מצב:</label>
+        <select id="mode-selector">
+            <option value="bluetooth">Bluetooth</option>
+            <option value="internal">רמקול פנימי / AUX</option>
+        </select>
+    </div>
+
+    <button id="connect-btn">חיבור לרמקול Bluetooth</button>
+    <div id="status-msg" class="status">אין רמקול מחובר</div>
+    <button id="microphone-btn" disabled>הפעל מיקרופון</button>
+
     <script src="app.js"></script>
 </body>
 </html>
