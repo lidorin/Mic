@@ -4,25 +4,27 @@
 const connectBtn = document.getElementById('connect-btn');
 const microphoneBtn = document.getElementById('microphone-btn');
 const statusMsg = document.getElementById('status-msg');
-const modeSelector = document.getElementById('mode-selector');
+const modeToggle = document.getElementById('mode-toggle');
 const bars = Array.from(document.getElementsByClassName('bar'));
 
 let audioStream = null;
 let analyser;
 let dataArray;
 
-// שינוי מצב על בסיס בורר המצבים
-modeSelector.addEventListener('change', (event) => {
-    if (event.target.value === 'bluetooth') {
+// שינוי מצב על בסיס הסליידר
+modeToggle.addEventListener('change', (event) => {
+    if (event.target.checked) {
         connectBtn.style.display = 'inline-block';
         statusMsg.textContent = "אין רמקול מחובר";
         statusMsg.style.color = "red";
         microphoneBtn.disabled = true;
+        microphoneBtn.classList.add('disabled');
     } else {
         connectBtn.style.display = 'none';
-        statusMsg.textContent = "מצב רמקול פנימי / AUX";
+        statusMsg.textContent = "מצב רמקול פנימי";
         statusMsg.style.color = "green";
         microphoneBtn.disabled = false;
+        microphoneBtn.classList.remove('disabled');
     }
 });
 
@@ -34,6 +36,7 @@ async function connectToBluetooth() {
             statusMsg.textContent = "רמקול Bluetooth מחובר";
             statusMsg.style.color = "green";
             microphoneBtn.disabled = false;
+            microphoneBtn.classList.remove('disabled');
         }
     } catch (error) {
         console.error('שגיאה בחיבור Bluetooth:', error);
@@ -51,6 +54,7 @@ async function enableMicrophone() {
     try {
         audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         statusMsg.textContent = "מיקרופון פועל";
+        microphoneBtn.textContent = "הפסק מיקרופון";
         statusMsg.style.color = "blue";
 
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -100,6 +104,7 @@ function stopMicrophone() {
         audioStream = null;
         statusMsg.textContent = "מיקרופון הופסק";
         statusMsg.style.color = "gray";
+        microphoneBtn.textContent = "הפעל מיקרופון";
         bars.forEach(bar => bar.style.height = '10px');
     }
 }
