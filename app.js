@@ -10,6 +10,7 @@ const bars = Array.from(document.getElementsByClassName('bar'));
 let audioStream = null;
 let analyser;
 let dataArray;
+let visualizationInterval;
 
 // שינוי מצב על בסיס הסליידר
 modeToggle.addEventListener('change', (event) => {
@@ -45,7 +46,7 @@ async function connectToBluetooth() {
     }
 }
 
-// פונקציה להפעלת המיקרופון והוספת מחוון שמע
+// פונקציה להפעלת המיקרופון והפעלת מחוון שמע
 async function enableMicrophone() {
     if (audioStream) {
         stopMicrophone();
@@ -76,32 +77,34 @@ async function enableMicrophone() {
     }
 }
 
-// פונקציה להצגת מחוון שמע מבוסס עמודות
+// הפעלת מחוון שמע עם `setInterval` כדי להפחית עומס
 function visualizeAudioBars() {
-    requestAnimationFrame(visualizeAudioBars);
-    analyser.getByteFrequencyData(dataArray);
+    visualizationInterval = setInterval(() => {
+        analyser.getByteFrequencyData(dataArray);
 
-    const step = Math.round(dataArray.length / bars.length);
-    bars.forEach((bar, index) => {
-        const value = dataArray[index * step];
-        const barHeight = (value / 255) * 100;
-        bar.style.height = `${barHeight}px`;
+        const step = Math.round(dataArray.length / bars.length);
+        bars.forEach((bar, index) => {
+            const value = dataArray[index * step];
+            const barHeight = (value / 255) * 100;
+            bar.style.height = `${barHeight}px`;
 
-        if (value < 85) {
-            bar.style.backgroundColor = 'green';
-        } else if (value < 170) {
-            bar.style.backgroundColor = 'yellow';
-        } else {
-            bar.style.backgroundColor = 'red';
-        }
-    });
+            if (value < 85) {
+                bar.style.backgroundColor = 'green';
+            } else if (value < 170) {
+                bar.style.backgroundColor = 'yellow';
+            } else {
+                bar.style.backgroundColor = 'red';
+            }
+        });
+    }, 100); // עדכון כל 100 מילישניות
 }
 
-// פונקציה לעצירת המיקרופון
+// פונקציה לעצירת המיקרופון והפסקת המחוון
 function stopMicrophone() {
     if (audioStream) {
         audioStream.getTracks().forEach(track => track.stop());
         audioStream = null;
+        clearInterval(visualizationInterval); // עצירת העדכונים
         statusMsg.textContent = "מיקרופון הופסק";
         statusMsg.style.color = "gray";
         microphoneBtn.textContent = "הפעל מיקרופון";
