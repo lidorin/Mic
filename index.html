@@ -3,76 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אפליקציית מיקרופון לכנסים</title>
-    <link rel="stylesheet" href="style.css">
+    <title>בדיקת מיקרופון פשוטה</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin: 0;
             padding: 20px;
-            background-color: #f0f0f0;
         }
         h1 {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 0;
+            color: #333;
         }
-        .slider-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        #status-msg {
             margin-top: 20px;
-        }
-        .slider-label {
             font-size: 18px;
-            margin-right: 10px;
-        }
-        .slider {
-            position: relative;
-            width: 60px;
-            height: 30px;
-        }
-        .slider input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider-switch {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 15px;
-        }
-        .slider-switch:before {
-            position: absolute;
-            content: "";
-            height: 22px; width: 22px;
-            left: 4px; bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider-switch {
-            background-color: #4CAF50;
-        }
-        input:checked + .slider-switch:before {
-            transform: translateX(30px);
-        }
-        .container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .bar {
-            width: 10px;
-            height: 50px;
-            background-color: green;
-            margin: 0 2px;
-            display: inline-block;
-            transition: height 0.1s, background-color 0.1s;
+            color: red;
         }
         #microphone-btn {
             background-color: #4CAF50;
@@ -82,41 +26,29 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 20px;
-        }
-        #microphone-btn:hover {
-            background-color: #45a049;
         }
         #microphone-btn.disabled {
             background-color: #ccc;
             cursor: not-allowed;
         }
-        #status-msg {
-            margin-top: 20px;
-            font-size: 18px;
-            color: red;
+        .bar {
+            width: 10px;
+            height: 50px;
+            background-color: green;
+            margin: 0 2px;
+            display: inline-block;
+            transition: height 0.1s;
         }
     </style>
 </head>
 <body>
-    <h1>אפליקציית מיקרופון לכנסים</h1>
-    
-    <!-- כפתור סליידר לבחירת מצב -->
-    <div class="slider-container">
-        <span class="slider-label">רמקול פנימי</span>
-        <label class="slider">
-            <input type="checkbox" id="mode-toggle">
-            <span class="slider-switch"></span>
-        </label>
-        <span class="slider-label">Bluetooth</span>
-    </div>
+    <h1>בדיקת מיקרופון פשוטה</h1>
 
-    <button id="connect-btn">חיבור לרמקול Bluetooth</button>
-    <div id="status-msg" class="status">אין רמקול מחובר</div>
-    <button id="microphone-btn" class="disabled" disabled>הפעל מיקרופון</button>
+    <button id="microphone-btn">הפעל מיקרופון</button>
+    <div id="status-msg">מיקרופון כבוי</div>
 
-    <!-- מחוון שמע מבוסס עמודות -->
-    <div class="container">
+    <!-- מחוון שמע בסיסי -->
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
         <div class="bar" id="bar1"></div>
         <div class="bar" id="bar2"></div>
         <div class="bar" id="bar3"></div>
