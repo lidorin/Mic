@@ -1,42 +1,18 @@
 <!DOCTYPE html>
 <html lang="he">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>בדיקת מיקרופון פשוטה לרמקול פנימי</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        #status-msg {
-            margin-top: 20px;
-            font-size: 18px;
-            color: red;
-        }
-        #microphone-btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        #microphone-btn.disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Live Mic Loopback</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>בדיקת מיקרופון פשוטה לרמקול פנימי</h1>
-
-    <button id="microphone-btn">הפעל מיקרופון</button>
-    <div id="status-msg">מיקרופון כבוי</div>
-
-    <script src="app.js"></script
+  <h1>Live Mic Loopback</h1>
+  <p>לחצו על "התחל" כדי להתחבר למיקרופון ולהשמיע בזמן אמת. לחצו על "עצור" כדי לסיים.</p>
+  <div class="controls">
+    <button id="startBtn">התחל</button>
+    <button id="stopBtn" disabled>עצור</button>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
