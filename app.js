@@ -1,45 +1,67 @@
 // app.js
+let audioCtx = null;
+let sourceNode = null;
+let micStream = null;
 
-// אלמנטים בממשק
-const microphoneBtn = document.getElementById('microphone-btn');
-const statusMsg = document.getElementById('status-msg');
+const startBtn = document.getElementById('startBtn');
+const stopBtn  = document.getElementById('stopBtn');
 
-let audioStream = null;
+startBtn.addEventListener('click', startLoopback);
+stopBtn.addEventListener('click', stopLoopback);
 
-// פונקציה להפעלת המיקרופון ושידור לרמקול פנימי
-async function enableMicrophone() {
-    if (audioStream) {
-        stopMicrophone();
-        return;
+async function startLoopback() {
+  // מנע לחיצות נוספות
+  startBtn.disabled = true;
+  stopBtn.disabled  = false;
+
+  try {
+    // בדיקת תמיכה
+    if (!navigator.mediaDevices?.getUserMedia || !window.AudioContext) {
+      throw new Error('getUserMedia או Web Audio API לא נתמכים בדפדפן זה');
     }
-    try {
-        audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        statusMsg.textContent = "מיקרופון פועל";
-        microphoneBtn.textContent = "הפסק מיקרופון";
-        statusMsg.style.color = "blue";
 
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const source = audioContext.createMediaStreamSource(audioStream);
-
-        // שידור האודיו ישירות לרמקול הפנימי
-        source.connect(audioContext.destination);
-    } catch (error) {
-        console.error('שגיאה בגישה למיקרופון:', error);
-        statusMsg.textContent = "שגיאה בגישה למיקרופון";
-        statusMsg.style.color = "red";
+    // אם לא נוצר AudioContext עדיין — צור
+    if (!audioCtx) {
+      audioCtx = new AudioContext({ latencyHint: 'interactive' });
+    } else if (audioCtx.state === 'suspended') {
+      await audioCtx.resume();
     }
+
+    // בקשת הרשאה וזרם מיקרופון
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // יצירת מקור ועצם קישור לרמקול
+    sourceNode = audioCtx.createMediaStreamSource(micStream);
+    sourceNode.connect(audioCtx.destination);
+
+    console.log('▶️ השידור החל – מדברים ושומעים ברמקול בזמן אמת.');
+  } catch (err) {
+    console.error('❌ שגיאה בהתחלת השידור:', err);
+    resetButtons();
+  }
 }
 
-// פונקציה לעצירת המיקרופון
-function stopMicrophone() {
-    if (audioStream) {
-        audioStream.getTracks().forEach(track => track.stop());
-        audioStream = null;
-        statusMsg.textContent = "מיקרופון כבוי";
-        statusMsg.style.color = "red";
-        microphoneBtn.textContent = "הפעל מיקרופון";
-    }
+function stopLoopback() {
+  // עצירת הזרימה והקשר
+  if (sourceNode) {
+    sourceNode.disconnect();
+    sourceNode = null;
+  }
+  if (micStream) {
+    micStream.getTracks().forEach(t => t.stop());
+    micStream = null;
+  }
+  if (audioCtx) {
+    audioCtx.close();
+    audioCtx = null;
+  }
+
+  console.log('⏹️ השידור הופסק.');
+
+  resetButtons();
 }
 
-// אירוע בכפתור
-microphoneBtn.addEventListener('click', enableMicrophone);
+function resetButtons() {
+  startBtn.disabled = false;
+  stopBtn.disabled  = true;
+}
